@@ -1,0 +1,131 @@
+Export list of group members into csv file 
+
+ 
+
+Get-import-module ActiveDirectory 
+
+ 
+
+Get-ADGroupMember -identity "group_name" -recursive | s 
+
+elect name | Export-csv -path C:\Users\...\filename.csv -NoTypeInformation 
+
+ 
+
+The tag -recursive will include members of nested groups 
+
+ 
+
+Export list of groups user is member of to csv file 
+
+get-adprincipalgroupmembership -Identity "<username> " | select name | export-csv "H:\powershellscripts\<username>.csv" 
+
+ 
+
+Export list of groups user is member of to csv file 
+
+e 
+
+ 
+
+Finding stale computers in an OU 
+
+ 
+
+Import-module  ActiveDirectory 
+
+ 
+
+$date={DateTime]::Today.addDays(-90) 
+
+Get-ADComputer -Filter 'PasswordLastSet -le $date' -SearchBase "OU path to search" -properties PasswordLastSet 
+
+Trimming the whitespace off the end of the DisplayName 
+
+ 
+
+get-mailbox -identity <user alias> | Foreach \{ Set-Mailbox -Identity $_.Identity -DisplayName $_.DisplayName.Trim() \}</user> 
+
+Check if user exchange storage limit reached: 
+
+ 
+
+Get-MailboxStatistics <username> 
+
+Get users inbox and subfolder size and item count: 
+
+ 
+
+Get-MailboxFolderStatistics <username> -FolderScope Inbox | Where {$_.FolderPath -eq "/Inbox"} |Select Name,FolderandSubFolderSize,ItemsinFolderandSubFolders 
+
+List users Outlook rules: 
+
+ 
+
+Get-InboxRule -Mailbox <username> 
+
+ 
+
+ 
+
+List users Outlook rules quota: 
+
+ 
+
+Get-Mailbox <username> | Select Name,RulesQuota 
+
+ 
+
+Increase Outlook rules quota: 
+
+ 
+
+Set-Mailbox <username> -RulesQuota 128kb 
+
+Create a mailbox: 
+
+ 
+
+Enable-Mailbox -Identity 'corp.local/path_to_user' -Alias 'alias_name' -Database 'db_name' -RetentionPolicy 'Retention_policy' 
+
+ 
+
+Adding full access permission: 
+
+Add-MailboxPermission <mailbox> -AccessRights "FullAccess" -User <username> 
+
+ 
+
+Adding Send As permissions: 
+
+Add-ADPermission "<mailbox>" -User "<username>" -Extendedrights "Send As" 
+
+Adding users of an OU to a security group: 
+
+Get-ADUser -SearchBase 'path to OU' -Filter * | ForEach-Object {Add-ADGroupMember -Identity '<group name>' -Members $_-WhatIf}  *remove -WhatIf after testing 
+
+Getting list of all users moved to a specific OU: 
+
+Get-ADUser -SearchBase 'path to OU' -Filter * -Properties name | Select name | Sort-Object name | Export-CSV "H:\filename.csv" 
+
+ 
+
+List of all computers moved to PCI: 
+
+Get-ADComputer -searchbase 'path to OU' -Filter * -properties name | select name |sort-object name | export-csv "H:\filename.csv" 
+
+ 
+
+Clear user profile path: 
+
+Set-ADUser <username> -clear profilepath 
+
+ 
+
+Adding attribute 8 
+
+ 
+
+Set-ADUser <username> -Add @{"extensionAttribute8" = "<whatever billing gives you>"} 
+
+ 
